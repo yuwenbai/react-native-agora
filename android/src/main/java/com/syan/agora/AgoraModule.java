@@ -1,8 +1,9 @@
 package com.syan.agora;
 
 import android.graphics.Rect;
-import android.support.annotation.Nullable;
 import android.view.SurfaceView;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -39,7 +40,6 @@ import io.agora.rtc.video.CameraCapturerConfiguration;
 import io.agora.rtc.video.ChannelMediaInfo;
 import io.agora.rtc.video.ChannelMediaRelayConfiguration;
 import io.agora.rtc.video.VideoEncoderConfiguration;
-import io.agora.rtc.video.WatermarkOptions;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import static com.syan.agora.AgoraConst.*;
@@ -508,7 +508,8 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                         WritableMap obj = Arguments.createMap();
                         obj.putInt("uid", speakers[i].uid);
                         obj.putInt("volume", speakers[i].volume);
-                        obj.putInt("vad", speakers[i].vad);
+//                        obj.putInt("vad", speakers[i].vad);
+                        obj.putInt("vad", 0);
                         arr.pushMap(obj);
                     }
 
@@ -1667,7 +1668,7 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void enableAudioVolumeIndication(int interval, int smooth, boolean vad, Promise promise) {
-        Integer res = AgoraManager.getInstance().mRtcEngine.enableAudioVolumeIndication(interval, smooth, vad);
+        Integer res = AgoraManager.getInstance().mRtcEngine.enableAudioVolumeIndication(interval, smooth);
         if (res == 0) {
             promise.resolve(null);
         } else {
@@ -1896,7 +1897,6 @@ public class AgoraModule extends ReactContextBaseJavaModule {
         Integer res = AgoraManager.getInstance().mRtcEngine
                 .startAudioRecording(
                         options.getString("filepath"),
-                        options.getInt("sampleRate"),
                         options.getInt("quality")
                 );
         if (res == 0) {
@@ -2008,33 +2008,33 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void addVideoWatermark(ReadableMap options, Promise promise) {
-        String url = options.getString("url");
-        ReadableMap watermarkOptions = options.getMap("options");
-        ReadableMap positionLandscapeOptions = watermarkOptions.getMap("positionInPortraitMode");
-        WatermarkOptions watermarkOpts = new WatermarkOptions();
-        WatermarkOptions.Rectangle landscapePosition = new WatermarkOptions.Rectangle();
-        landscapePosition.height = positionLandscapeOptions.getInt("height");
-        landscapePosition.width = positionLandscapeOptions.getInt("width");
-        landscapePosition.x = positionLandscapeOptions.getInt("x");
-        landscapePosition.y = positionLandscapeOptions.getInt("y");
-
-        ReadableMap positionPortraitOptions = watermarkOptions.getMap("positionInPortraitMode");
-        WatermarkOptions.Rectangle portraitPosition = new WatermarkOptions.Rectangle();
-        portraitPosition.height = positionPortraitOptions.getInt("height");
-        portraitPosition.width = positionPortraitOptions.getInt("width");
-        portraitPosition.x = positionPortraitOptions.getInt("x");
-        portraitPosition.y = positionPortraitOptions.getInt("y");
-
-        watermarkOpts.positionInLandscapeMode = landscapePosition;
-        watermarkOpts.visibleInPreview = watermarkOptions.getBoolean("visibleInPreview");
-        watermarkOpts.positionInPortraitMode = portraitPosition;
-        Integer res = AgoraManager.getInstance().mRtcEngine
-                .addVideoWatermark(url, watermarkOpts);
-        if (res == 0) {
-            promise.resolve(null);
-        } else {
-            promise.reject("-1", res.toString());
-        }
+//        String url = options.getString("url");
+//        ReadableMap watermarkOptions = options.getMap("options");
+//        ReadableMap positionLandscapeOptions = watermarkOptions.getMap("positionInPortraitMode");
+//        WatermarkOptions watermarkOpts = new WatermarkOptions();
+//        WatermarkOptions.Rectangle landscapePosition = new WatermarkOptions.Rectangle();
+//        landscapePosition.height = positionLandscapeOptions.getInt("height");
+//        landscapePosition.width = positionLandscapeOptions.getInt("width");
+//        landscapePosition.x = positionLandscapeOptions.getInt("x");
+//        landscapePosition.y = positionLandscapeOptions.getInt("y");
+//
+//        ReadableMap positionPortraitOptions = watermarkOptions.getMap("positionInPortraitMode");
+//        WatermarkOptions.Rectangle portraitPosition = new WatermarkOptions.Rectangle();
+//        portraitPosition.height = positionPortraitOptions.getInt("height");
+//        portraitPosition.width = positionPortraitOptions.getInt("width");
+//        portraitPosition.x = positionPortraitOptions.getInt("x");
+//        portraitPosition.y = positionPortraitOptions.getInt("y");
+//
+//        watermarkOpts.positionInLandscapeMode = landscapePosition;
+//        watermarkOpts.visibleInPreview = watermarkOptions.getBoolean("visibleInPreview");
+//        watermarkOpts.positionInPortraitMode = portraitPosition;
+//        Integer res = AgoraManager.getInstance().mRtcEngine
+//                .addVideoWatermark(url, watermarkOpts);
+//        if (res == 0) {
+//            promise.resolve(null);
+//        } else {
+//            promise.reject("-1", res.toString());
+//        }
     }
 
     @ReactMethod
@@ -2414,7 +2414,8 @@ public class AgoraModule extends ReactContextBaseJavaModule {
                 options.getDouble("pitch"),
                 options.getDouble("pan"),
                 options.getDouble("gain"),
-                options.getBoolean("publish")
+                options.getBoolean("publish"),
+                0
         );
         if (res == 0) {
             promise.resolve(null);
@@ -2656,39 +2657,39 @@ public class AgoraModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void setCameraCapturerConfiguration(ReadableMap options, Promise promise) {
-        CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_AUTO;
-        switch (options.getInt("preference")) {
-            case 0: {
-                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_AUTO;
-                break;
-            }
-            case 1: {
-                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE;
-                break;
-            }
-            case 2: {
-                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_PREVIEW;
-                break;
-            }
-        }
-        CameraCapturerConfiguration.CAMERA_DIRECTION cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
-        switch (options.getInt("cameraDirection")) {
-            case 0: {
-                cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
-                break;
-            }
-            case 1: {
-                cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
-                break;
-            }
-        }
-        CameraCapturerConfiguration config = new CameraCapturerConfiguration(preference, cameraDirection);
-        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraCapturerConfiguration(config);
-        if (res == 0) {
-            promise.resolve(null);
-        } else {
-            promise.reject("-1", res.toString());
-        }
+//        CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_AUTO;
+//        switch (options.getInt("preference")) {
+//            case 0: {
+//                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_AUTO;
+//                break;
+//            }
+//            case 1: {
+//                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE;
+//                break;
+//            }
+//            case 2: {
+//                preference = CameraCapturerConfiguration.CAPTURER_OUTPUT_PREFERENCE.CAPTURER_OUTPUT_PREFERENCE_PREVIEW;
+//                break;
+//            }
+//        }
+//        CameraCapturerConfiguration.CAMERA_DIRECTION cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
+//        switch (options.getInt("cameraDirection")) {
+//            case 0: {
+//                cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_REAR;
+//                break;
+//            }
+//            case 1: {
+//                cameraDirection = CameraCapturerConfiguration.CAMERA_DIRECTION.CAMERA_FRONT;
+//                break;
+//            }
+//        }
+//        CameraCapturerConfiguration config = new CameraCapturerConfiguration(preference, cameraDirection);
+//        Integer res = AgoraManager.getInstance().mRtcEngine.setCameraCapturerConfiguration(config);
+//        if (res == 0) {
+//            promise.resolve(null);
+//        } else {
+//            promise.reject("-1", res.toString());
+//        }
     }
 
     @ReactMethod

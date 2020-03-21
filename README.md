@@ -1,3 +1,7 @@
+## 因为被要求切换到教育版 没办法就 fork M大的仓库 做了修改 下面的信息全部保留希望M大看到不要介意 
+## 基于声网 io.agora.rtc:full-sdk:2.9.0.102" 版本 教育版 
+## 修改支持androidX
+
 ##### 有任何问题欢迎加入QQ群进行反馈  471757030
 
 ## [for 1.x old version](README.old.md)
